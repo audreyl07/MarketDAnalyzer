@@ -1,150 +1,138 @@
 # MarketDAnalyzer
 
-A small Spring Boot application that analyzes market data and integrates with QuestDB for storage/querying.
+A Spring Boot application that analyzes market data and integrates with QuestDB for time-series storage and querying. This project provides REST APIs for data ingestion, analysis, and maintenance of market datasets with SQL-based workflows.
 
-## Summary
+## Installation 
 
-This project contains a Java Spring Boot application (entry point: `MdAnalyzerApplication`) that provides data ingestion, analysis, and maintenance capabilities for market datasets. It includes SQL scripts used for preparing and analyzing data, and a service to interact with QuestDB.
-
-## Project layout
-
-- `src/main/java/dev/audreyl07/MDAnalyzer`
-	- `MdAnalyzerApplication.java` — Spring Boot entry point
-	- `controller/`
-		- `DataController.java` — endpoints for data ingestion and retrieval
-		- `MaintenanceController.java` — endpoints for maintenance tasks (backfills, reindexes, etc.)
-	- `service/`
-		- `DataService.java` — business logic for processing market data
-		- `MaintenanceService.java` — maintenance workflows
-		- `QuestDBService.java` — QuestDB integration (writes/queries)
-- `src/main/resources/application.yaml` — configuration
-- `src/main/resources/script/` — SQL scripts used by the app
-	- `analysis_market.sql`
-	- `historical_d.sql`
-	- `historical_raw_d.sql`
-	- `indicator_d_52w.sql`
-	- `indicator_d_MA.sql`
-	- `indices_d.sql`
-	- `indices_raw_d.sql`
-
-## Requirements
-
+**Requirements:**
 - Java 11+ (or the version configured in `pom.xml`)
 - Maven (the project includes the Maven wrapper: `mvnw` / `mvnw.cmd`)
 - (Optional) A running QuestDB instance if you want to execute writes/queries against QuestDB
 
-## Configuration
+**Installation steps:**
 
-Application configuration is in `src/main/resources/application.yaml` (also copied to `target/classes/application.yaml` during build). Update connection properties (QuestDB URL, authentication, etc.) there before running if necessary.
+1) Clone or download the repository to your local machine.
 
-## Build and run (Windows PowerShell)
-
-Build the project and run tests:
+2) Build the project using the Maven wrapper (Windows PowerShell):
 
 ```powershell
 .\mvnw.cmd clean package
-.\mvnw.cmd test
 ```
 
-Run the Spring Boot application using the Maven wrapper (development):
+This compiles the code, runs tests, and produces a JAR file in the `target/` directory.
+
+## How to Use
+
+Once installed, you can run and interact with the application in several ways:
+
+**1 Run in development mode:**
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-Or run the packaged JAR (after `package`):
+This starts the application using the classpath and configuration from `src/main/resources`.
+
+**2 Run the packaged JAR:**
 
 ```powershell
-# Replace the jar name as produced by the build
-java -jar .\target\*.jar
-```
-
-## Useful endpoints (high level)
-
-The project exposes controllers under `controller/`. Typical responsibilities:
-
-- `DataController` — submit market data, trigger processing, query results
-- `MaintenanceController` — trigger maintenance jobs like backfills or dataset refresh
-
-(Open the controller source files for exact HTTP paths and request/response formats.)
-
-## SQL scripts
-
-The `src/main/resources/script` folder contains SQL used by the analysis workflows. These are typically executed as part of data preparation and analysis jobs.
-
-## Tests
-
-Run unit/integration tests with:
-
-```powershell
-.\mvnw.cmd test
-```
-
-Add tests under `src/test/java` following the existing structure. The repository already contains a test skeleton at `src/test/java/dev/audreyl07/MDAnalyzer/MdAnalyzerApplicationTests.java`.
-
-## How to run
-
-Below are concrete steps to build, run, and test the application locally (Windows PowerShell). Adjust paths or flags as needed for your environment.
-
-1) Build the project and run unit tests
-
-```powershell
-.\mvnw.cmd clean package
-# or to just run tests
-.\mvnw.cmd test
-```
-
-2) Run the application (development)
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-This runs the app with the classpath and configuration from `src/main/resources`. The app uses `application.yaml` for its configuration (QuestDB connection, ports, etc.).
-
-3) Run the packaged JAR
-
-After `clean package`, run the produced JAR from `target`:
-
-```powershell
-# Replace the jar name if necessary
 java -jar .\target\marketdanalyzer-*.jar
 ```
 
-4) Environment and QuestDB
+**3 Make HTTP requests to the REST APIs:**
 
-- Edit `src/main/resources/application.yaml` (or supply environment-specific overrides) to configure the QuestDB URL/credentials, application port, and any other properties.
-- For development, you can run QuestDB locally (official Docker image) and point `application.yaml` to it. Example docker-compose (not included):
+The application exposes REST endpoints for data ingestion, analysis, and maintenance. Use an HTTP client (curl, Postman, or PowerShell) to interact with the APIs.
+
+Example GET request (replace with actual endpoint path):
+
+```powershell
+Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Get
+```
+
+Example POST request to submit market data:
+
+```powershell
+Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Post -Body (@{ /* json payload */ } | ConvertTo-Json) -ContentType 'application/json'
+```
+
+**4) Use the controllers:**
+
+- **`DataController`** — Submit market data, trigger processing, and query results
+- **`MaintenanceController`** — Trigger maintenance jobs like backfills or dataset refresh
+
+(Open the controller source files for exact HTTP paths and request/response formats.)
+
+**5) IDE / Debug:**
+
+Import the Maven project into IntelliJ IDEA or Eclipse. Run `MdAnalyzerApplication` as a Spring Boot app for interactive debugging.
+
+## How to Configure
+
+Application configuration is in `src/main/resources/application.yaml`. This file controls:
+
+- QuestDB connection properties (URL, credentials, port)
+- Application server port
+- Data source settings
+- Other Spring Boot properties
+
+**To customize:**
+
+1) Edit `src/main/resources/application.yaml` before building/running.
+
+2) Or provide environment-specific overrides using Spring Boot's standard configuration mechanisms (environment variables, command-line arguments, or external config files).
+
+**QuestDB setup (optional):**
+
+For development, run QuestDB locally using Docker. Example `docker-compose.yml` (not included in this repo):
 
 ```yaml
 version: '3.7'
 services:
-	questdb:
-		image: questdb/questdb:latest
-		ports:
-			- "9000:9000"   # web console
-			- "8812:8812"   # ILP
+  questdb:
+    image: questdb/questdb:latest
+    ports:
+      - "9000:9000"   # web console
+      - "8812:8812"   # ILP
 ```
 
-5) Example HTTP request (once the app is running)
+Point `application.yaml` to the QuestDB instance (e.g., `localhost:8812` or `localhost:9000`).
 
-Use an HTTP client (curl, Postman) to exercise endpoints. Inspect controller sources for exact paths. Example (replace host/port/path):
+**Troubleshooting:**
+
+- If the app cannot connect to QuestDB, verify the host/port in `application.yaml` and ensure QuestDB is reachable.
+- Create an `application.yaml.example` with minimal required properties for easy setup.
+
+## Project Structure
+
+- `src/main/java/dev/audreyl07/MDAnalyzer`
+  - `MdAnalyzerApplication.java` — Spring Boot entry point
+  - `controller/`
+    - `DataController.java` — REST endpoints for data ingestion and retrieval
+    - `MaintenanceController.java` — REST endpoints for maintenance tasks (backfills, reindexes, etc.)
+  - `service/`
+    - `DataService.java` — Business logic for processing market data
+    - `MaintenanceService.java` — Maintenance workflows
+    - `QuestDBService.java` — QuestDB integration (writes/queries)
+- `src/main/resources/application.yaml` — Application configuration
+- `src/main/resources/script/` — SQL scripts used by the app for analysis workflows
+  - `analysis_market.sql`
+  - `historical_d.sql`
+  - `historical_raw_d.sql`
+  - `indicator_d_52w.sql`
+  - `indicator_d_MA.sql`
+  - `indices_d.sql`
+  - `indices_raw_d.sql`
+- `src/test/java/dev/audreyl07/MDAnalyzer/` — Unit and integration tests
+
+## How to Test
+
+Run unit/integration tests using the Maven wrapper:
 
 ```powershell
-# GET example (replace path)
-Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Get
-# POST example (replace with actual payload and path)
-Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Post -Body (@{ /* json */ } | ConvertTo-Json) -ContentType 'application/json'
+.\mvnw.cmd test
 ```
 
-6) IDE / Debug
-
-- Import the Maven project into IntelliJ IDEA or Eclipse. Run `MdAnalyzerApplication` as a Spring Boot app for a debugging session.
-
-7) Troubleshooting
-
-- If the app cannot connect to QuestDB, verify the host/port in `application.yaml` and that QuestDB is reachable from your host.
-- If you need example config, create `application.yaml.example` showing the minimal properties (QuestDB URL, port, datasource) and copy it to `application.yaml` when testing.
+Add new tests under `src/test/java` following the existing structure. The repository includes a test skeleton at `src/test/java/dev/audreyl07/MDAnalyzer/MdAnalyzerApplicationTests.java`.
 
 ## Contact
 
