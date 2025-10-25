@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: m2-questdb
+
+mdanalyzer:
+  path:
+    historicalDirectoryPath: "E:\\Work\\historical_data"
+    historicalErrorPath: "E:\\Work\\historical_error"
+    importDailyFile: "E:\\Work\\daily_data"
+    importDailyError: "E:\\Work\\daily_error"
+  hostName: "127.0.0.1:9000"

@@ -1,0 +1,13 @@
+package dev.audreyl07.MDAnalyzer;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MdAnalyzerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MdAnalyzerApplication.class, args);
+	}
+
+}
