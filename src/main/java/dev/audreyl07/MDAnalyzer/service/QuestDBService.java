@@ -20,6 +20,15 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
+/**
+ * Service for interacting with QuestDB via HTTP endpoints.
+ *
+ * Features:
+ * - Execute SQL queries and return parsed JSON responses
+ * - Import CSV files into QuestDB tables (multipart uploads)
+ * - Copy failed imports to an error directory for triage
+ * - Utility operations: truncate table, get latest processed date
+ */
 @Service
 public class QuestDBService {
 

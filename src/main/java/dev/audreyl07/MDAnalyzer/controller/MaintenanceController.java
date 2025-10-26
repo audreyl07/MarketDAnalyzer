@@ -11,6 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * REST controller for maintenance and data pipeline operations.
+ *
+ * Provides endpoints to:
+ * - Import raw files into QuestDB
+ * - Populate historical and indicator tables (52w highs/lows, MA, comparisons)
+ * - Update analysis aggregates (market-wide metrics)
+ * - Query latest processed date per table/type
+ */
 @RestController
 @RequestMapping("/maintenance")
 public class MaintenanceController {

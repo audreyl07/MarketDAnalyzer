@@ -5,6 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller exposing data retrieval endpoints for market datasets.
+ *
+ * Endpoints:
+ * - GET /{dataType}/{resultType}/{symbol}: Retrieve time-series data for a given symbol
+ *   - dataType: "stock" | "index" | "market" (market returns analysis series)
+ *   - resultType: "single" (default) | "full"
+ *   - symbol: ticker symbol, e.g., AAPL, ^GSPC
+ */
 @CrossOrigin(origins = "http://localhost:1234")
 @RestController
 @RequestMapping("")

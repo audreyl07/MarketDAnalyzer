@@ -7,6 +7,15 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Service orchestrating maintenance and batch operations against QuestDB.
+ *
+ * Responsibilities:
+ * - Import raw CSV files into staging tables
+ * - Populate historical, indicator, and analysis tables via SQL window functions
+ * - Update or recompute aggregates (52w breadth, moving average breadth)
+ * - Provide utilities to query latest processed dates per table/type
+ */
 @Service
 public class MaintenanceService {
     @Autowired

@@ -11,6 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Business logic for retrieving and shaping market data for API responses.
+ *
+ * Responsibilities:
+ * - Query QuestDB for stock and index historical series
+ * - Transform raw rows into simplified structures (single vs full OHLCV)
+ * - Provide market analysis series (52w highs/lows, MA 50/200 breadth)
+ */
 @Service
 public class DataService {
 
