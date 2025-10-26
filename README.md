@@ -25,7 +25,7 @@ This compiles the code, runs tests, and produces a JAR file in the `target/` dir
 
 Once installed, you can run and interact with the application in several ways:
 
-**1 Run in development mode:**
+**1. Run in development mode:**
 
 ```powershell
 .\mvnw.cmd spring-boot:run
@@ -33,13 +33,13 @@ Once installed, you can run and interact with the application in several ways:
 
 This starts the application using the classpath and configuration from `src/main/resources`.
 
-**2 Run the packaged JAR:**
+**2. Run the packaged JAR:**
 
 ```powershell
 java -jar .\target\marketdanalyzer-*.jar
 ```
 
-**3 Make HTTP requests to the REST APIs:**
+**3. Make HTTP requests to the REST APIs:**
 
 The application exposes REST endpoints for data ingestion, analysis, and maintenance. Use an HTTP client (curl, Postman, or PowerShell) to interact with the APIs.
 
@@ -52,17 +52,18 @@ Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Get
 Example POST request to submit market data:
 
 ```powershell
-Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Post -Body (@{ /* json payload */ } | ConvertTo-Json) -ContentType 'application/json'
+Invoke-RestMethod -Uri http://localhost:8080/api/data 
+-Method Post -Body (@{ /* json payload */ } | ConvertTo-Json) -ContentType 'application/json'
 ```
 
-**4) Use the controllers:**
+**4. Use the controllers:**
 
 - **`DataController`** — Submit market data, trigger processing, and query results
 - **`MaintenanceController`** — Trigger maintenance jobs like backfills or dataset refresh
 
 (Open the controller source files for exact HTTP paths and request/response formats.)
 
-**5) IDE / Debug:**
+**5. IDE / Debug:**
 
 Import the Maven project into IntelliJ IDEA or Eclipse. Run `MdAnalyzerApplication` as a Spring Boot app for interactive debugging.
 
@@ -105,16 +106,16 @@ Point `application.yaml` to the QuestDB instance (e.g., `localhost:8812` or `loc
 ## Project Structure
 
 - `src/main/java/dev/audreyl07/MDAnalyzer`
-  - `MdAnalyzerApplication.java` — Spring Boot entry point
+  - `MdAnalyzerApplication.java` 
   - `controller/`
-    - `DataController.java` — REST endpoints for data ingestion and retrieval
-    - `MaintenanceController.java` — REST endpoints for maintenance tasks (backfills, reindexes, etc.)
+    - `DataController.java` 
+    - `MaintenanceController.java`
   - `service/`
-    - `DataService.java` — Business logic for processing market data
-    - `MaintenanceService.java` — Maintenance workflows
-    - `QuestDBService.java` — QuestDB integration (writes/queries)
-- `src/main/resources/application.yaml` — Application configuration
-- `src/main/resources/script/` — SQL scripts used by the app for analysis workflows
+    - `DataService.java`
+    - `MaintenanceService.java` 
+    - `QuestDBService.java` 
+- `src/main/resources/application.yaml` 
+- `src/main/resources/script/` 
   - `analysis_market.sql`
   - `historical_d.sql`
   - `historical_raw_d.sql`
@@ -122,7 +123,7 @@ Point `application.yaml` to the QuestDB instance (e.g., `localhost:8812` or `loc
   - `indicator_d_MA.sql`
   - `indices_d.sql`
   - `indices_raw_d.sql`
-- `src/test/java/dev/audreyl07/MDAnalyzer/` — Unit and integration tests
+- `src/test/java/dev/audreyl07/MDAnalyzer/` 
 
 ## How to Test
 
