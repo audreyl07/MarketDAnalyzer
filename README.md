@@ -1,4 +1,3 @@
-# MarketDAnalyzer
 
 A Spring Boot application that analyzes market data and integrates with QuestDB for time-series storage and querying. This project provides two functionalities: 
 1. Stock historical and analytic data retrival 
@@ -13,7 +12,7 @@ A Spring Boot application that analyzes market data and integrates with QuestDB 
 ## Installation 
 
 **Requirements:**
-- Java 11+ (or the version configured in `pom.xml`)
+- Java 17+ (or the version configured in `pom.xml`)
 - Maven (the project includes the Maven wrapper: `mvnw` / `mvnw.cmd`)
 - A running QuestDB instance to execute writes/queries against QuestDB
 
