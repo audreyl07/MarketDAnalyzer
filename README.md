@@ -15,7 +15,7 @@ A Spring Boot application that analyzes market data and integrates with QuestDB 
 **Requirements:**
 - Java 11+ (or the version configured in `pom.xml`)
 - Maven (the project includes the Maven wrapper: `mvnw` / `mvnw.cmd`)
-- (Optional) A running QuestDB instance if you want to execute writes/queries against QuestDB
+- A running QuestDB instance to execute writes/queries against QuestDB
 
 **Installation steps:**
 
@@ -51,64 +51,6 @@ java -jar .\target\marketdanalyzer-*.jar
 
 Import the Maven project into IntelliJ IDEA or Eclipse. Run `MdAnalyzerApplication` as a Spring Boot app for interactive debugging.
 
-### Controllers
-
-The application exposes two REST controllers for different responsibilities:
-
-#### DataController
-
-**Purpose:** Query and retrieve market data for display or charting.
-
-**Example requests:**
-
-```powershell
-# Get full OHLCV for a stock (Apple)
-Invoke-RestMethod -Uri http://localhost:8080/stock/full/AAPL -Method Get
-```
-
-**Response:** JSON array of time-series data points.
-
-#### MaintenanceController
-
-**Purpose:** Trigger data pipeline and maintenance operations (imports, transformations, aggregations).
-
-**Example requests:**
-
-```powershell
-# Populate historical_d from raw data
-Invoke-RestMethod -Uri http://localhost:8080/maintenance/insert-historical `
-  -Method Post `
-  -Body (@{ type = "d" } | ConvertTo-Json) `
-  -ContentType 'application/json'
-```
-
-### Services
-
-The business logic is split across three service classes:
-
-#### DataService
-
-**Responsibilities:**
-- Query QuestDB for stock/index historical data
-- Transform raw query results into API-friendly JSON structures
-- Provide market analysis series (52w highs/lows, MA breadth percentages)
-
-#### MaintenanceService
-
-**Responsibilities:**
-- Orchestrate multi-step data pipelines
-- Build and execute SQL for transformations (window functions, aggregations)
-- Manage incremental updates (query latest date, append new data)
-- Coordinate full updates (52w, MA) by chaining operations
-
-#### QuestDBService
-
-**Responsibilities:**
-- Low-level HTTP client for QuestDB's `/exec` (SQL) and `/imp` (CSV import) endpoints
-- Execute queries and parse JSON responses
-- Upload files via multipart/form-data
-- Handle errors and copy failed imports to an error directory
-- Utility operations: truncate, latest date lookup
 
 ## How to Configure
 
@@ -125,7 +67,7 @@ Application configuration is in `src/main/resources/application.yaml`. This file
 
 2) Or provide environment-specific overrides using Spring Boot's standard configuration mechanisms (environment variables, command-line arguments, or external config files).
 
-**QuestDB setup (optional):**
+**QuestDB Setup:**
 
 For development, run QuestDB locally using Docker. Example `docker-compose.yml` (not included in this repo):
 
@@ -183,16 +125,64 @@ src/
 
 ```
 
-### Controllers
+### REST Controllers
 
-- **DataController** — Exposes GET endpoints for retrieving time-series data (stocks, indices, market analysis)
-- **MaintenanceController** — Exposes POST endpoints for data pipeline operations (import, transform, aggregate)
+The application exposes two REST controllers for different responsibilities:
+
+#### DataController
+
+**Purpose:** Query and retrieve market data for front end display. 
+
+**Example requests:**
+
+```powershell
+# Get full OHLCV for a stock (Apple)
+Invoke-RestMethod -Uri http://localhost:8080/stock/full/AAPL -Method Get
+```
+
+**Response:** JSON array of time-series data points.
+
+#### MaintenanceController
+
+**Purpose:** Trigger data pipeline and maintenance operations (imports, transformations, aggregations).
+
+**Example requests:**
+
+```powershell
+# Populate historical_d from raw data
+Invoke-RestMethod -Uri http://localhost:8080/maintenance/insert-historical `
+  -Method Post `
+  -Body (@{ type = "d" } | ConvertTo-Json) `
+  -ContentType 'application/json'
+```
 
 ### Services
 
-- **DataService** — Query QuestDB and shape results for API responses
-- **MaintenanceService** — Orchestrate multi-step SQL workflows (incremental updates, full pipelines)
-- **QuestDBService** — HTTP client for QuestDB `/exec` and `/imp` endpoints 
+The business logic is split across three service classes:
+
+#### DataService
+
+**Responsibilities:**
+- Query QuestDB for stock/index historical data
+- Transform raw query results into API-friendly JSON structures
+- Provide market analysis series (52w highs/lows, MA breadth percentages)
+
+#### MaintenanceService
+
+**Responsibilities:**
+- Orchestrate multi-step data pipelines
+- Build and execute SQL for transformations (window functions, aggregations)
+- Manage incremental updates (query latest date, append new data)
+- Coordinate full updates (52w, MA) by chaining operations
+
+#### QuestDBService
+
+**Responsibilities:**
+- Low-level HTTP client for QuestDB's `/exec` (SQL) and `/imp` (CSV import) endpoints
+- Execute queries and parse JSON responses
+- Upload files via multipart/form-data
+- Handle errors and copy failed imports to an error directory
+- Utility operations: truncate, latest date lookup
 
 ## How to Test
 
@@ -201,7 +191,6 @@ Run unit/integration tests using the Maven wrapper:
 ```powershell
 .\mvnw.cmd test
 ```
-
 Add new tests under `src/test/java` following the existing structure. The repository includes a test skeleton at `src/test/java/dev/audreyl07/MDAnalyzer/MdAnalyzerApplicationTests.java`.
 
 ## Future Enhancements
