@@ -2,6 +2,10 @@
 
 A Spring Boot application that analyzes market data and integrates with QuestDB for time-series storage and querying. This project provides REST APIs for data ingestion, analysis, and maintenance of market datasets with SQL-based workflows.
 
+## Overall Architecture 
+![DataController API](assets/DataController.jpg)
+
+![MaintenanceController API](assets/MaintenanceController.jpg)
 ## Installation 
 
 **Requirements:**
@@ -51,8 +55,6 @@ The application exposes two REST controllers for different responsibilities:
 
 **Purpose:** Query and retrieve market data for display or charting.
 
-![DataController API](assets/DataController.jpg)
-
 **Example requests:**
 
 ```powershell
@@ -65,8 +67,6 @@ Invoke-RestMethod -Uri http://localhost:8080/stock/full/AAPL -Method Get
 #### MaintenanceController
 
 **Purpose:** Trigger data pipeline and maintenance operations (imports, transformations, aggregations).
-
-![MaintenanceController API](assets/MaintenanceController.jpg)
 
 **Example requests:**
 
