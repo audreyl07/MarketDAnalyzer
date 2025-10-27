@@ -51,6 +51,8 @@ The application exposes two REST controllers for different responsibilities:
 
 **Purpose:** Query and retrieve market data for display or charting.
 
+![DataController API](assets/DataController.jpg)
+
 **Example requests:**
 
 ```powershell
@@ -63,6 +65,8 @@ Invoke-RestMethod -Uri http://localhost:8080/stock/full/AAPL -Method Get
 #### MaintenanceController
 
 **Purpose:** Trigger data pipeline and maintenance operations (imports, transformations, aggregations).
+
+![MaintenanceController API](assets/MaintenanceController.jpg)
 
 **Example requests:**
 
@@ -195,6 +199,28 @@ Run unit/integration tests using the Maven wrapper:
 ```
 
 Add new tests under `src/test/java` following the existing structure. The repository includes a test skeleton at `src/test/java/dev/audreyl07/MDAnalyzer/MdAnalyzerApplicationTests.java`.
+
+## Future Enhancements
+### Code Quality & Maintainability
+
+- **Type-safe JSON parsing** — Replace unchecked casts in `QuestDBService` and `DataService` with proper generics or DTOs to eliminate compiler warnings
+- **Error handling** — Implement custom exception types and `@ControllerAdvice` for consistent error responses across all endpoints
+- **Input validation** — Add `@Valid` and Bean Validation annotations to controller request parameters
+
+### Testing & Quality Assurance
+
+- **Integration tests** — Add `@SpringBootTest` integration tests that exercise full request/response cycles with TestContainers for QuestDB
+- **Service layer tests** — Complete unit test coverage for `MaintenanceService` and `QuestDBService` with mocked dependencies
+- **Load/performance testing** — Add JMeter or Gatling tests to validate performance under load
+- **Test data builders** — Implement builder pattern for test fixtures to simplify test setup
+
+### Features & Functionality
+
+- **Scheduled jobs** — Use `@Scheduled` to automate daily data imports and indicator updates without manual API calls
+- **WebSocket support** — Add real-time data streaming for live market updates
+- **Multi-database support** — Abstract the data layer to support alternative databases (PostgreSQL, TimescaleDB) in addition to QuestDB
+- **Data export** — Add endpoints to export analysis results as CSV, Excel, or JSON files
+- **Advanced analytics** — Extend indicators to include RSI, Bollinger Bands, volume-weighted metrics, and custom technical indicators
 
 ## Contact
 
