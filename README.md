@@ -39,33 +39,68 @@ This starts the application using the classpath and configuration from `src/main
 java -jar .\target\marketdanalyzer-*.jar
 ```
 
-**3. Make HTTP requests to the REST APIs:**
-
-The application exposes REST endpoints for data ingestion, analysis, and maintenance. Use an HTTP client (curl, Postman, or PowerShell) to interact with the APIs.
-
-Example GET request (replace with actual endpoint path):
-
-```powershell
-Invoke-RestMethod -Uri http://localhost:8080/api/data -Method Get
-```
-
-Example POST request to submit market data:
-
-```powershell
-Invoke-RestMethod -Uri http://localhost:8080/api/data 
--Method Post -Body (@{ /* json payload */ } | ConvertTo-Json) -ContentType 'application/json'
-```
-
-**4. Use the controllers:**
-
-- **`DataController`** — Submit market data, trigger processing, and query results
-- **`MaintenanceController`** — Trigger maintenance jobs like backfills or dataset refresh
-
-(Open the controller source files for exact HTTP paths and request/response formats.)
-
-**5. IDE / Debug:**
+**3. IDE / Debug:**
 
 Import the Maven project into IntelliJ IDEA or Eclipse. Run `MdAnalyzerApplication` as a Spring Boot app for interactive debugging.
+
+### Controllers
+
+The application exposes two REST controllers for different responsibilities:
+
+#### DataController
+
+**Purpose:** Query and retrieve market data for display or charting.
+
+**Example requests:**
+
+```powershell
+# Get full OHLCV for a stock (Apple)
+Invoke-RestMethod -Uri http://localhost:8080/stock/full/AAPL -Method Get
+```
+
+**Response:** JSON array of time-series data points.
+
+#### MaintenanceController
+
+**Purpose:** Trigger data pipeline and maintenance operations (imports, transformations, aggregations).
+
+**Example requests:**
+
+```powershell
+# Populate historical_d from raw data
+Invoke-RestMethod -Uri http://localhost:8080/maintenance/insert-historical `
+  -Method Post `
+  -Body (@{ type = "d" } | ConvertTo-Json) `
+  -ContentType 'application/json'
+```
+
+### Services
+
+The business logic is split across three service classes:
+
+#### DataService
+
+**Responsibilities:**
+- Query QuestDB for stock/index historical data
+- Transform raw query results into API-friendly JSON structures
+- Provide market analysis series (52w highs/lows, MA breadth percentages)
+
+#### MaintenanceService
+
+**Responsibilities:**
+- Orchestrate multi-step data pipelines
+- Build and execute SQL for transformations (window functions, aggregations)
+- Manage incremental updates (query latest date, append new data)
+- Coordinate full updates (52w, MA) by chaining operations
+
+#### QuestDBService
+
+**Responsibilities:**
+- Low-level HTTP client for QuestDB's `/exec` (SQL) and `/imp` (CSV import) endpoints
+- Execute queries and parse JSON responses
+- Upload files via multipart/form-data
+- Handle errors and copy failed imports to an error directory
+- Utility operations: truncate, latest date lookup
 
 ## How to Configure
 
@@ -105,25 +140,51 @@ Point `application.yaml` to the QuestDB instance (e.g., `localhost:8812` or `loc
 
 ## Project Structure
 
-- `src/main/java/dev/audreyl07/MDAnalyzer`
-  - `MdAnalyzerApplication.java` 
-  - `controller/`
-    - `DataController.java` 
-    - `MaintenanceController.java`
-  - `service/`
-    - `DataService.java`
-    - `MaintenanceService.java` 
-    - `QuestDBService.java` 
-- `src/main/resources/application.yaml` 
-- `src/main/resources/script/` 
-  - `analysis_market.sql`
-  - `historical_d.sql`
-  - `historical_raw_d.sql`
-  - `indicator_d_52w.sql`
-  - `indicator_d_MA.sql`
-  - `indices_d.sql`
-  - `indices_raw_d.sql`
-- `src/test/java/dev/audreyl07/MDAnalyzer/` 
+```
+src/
+├── main/
+│   ├── java/dev/audreyl07/MDAnalyzer/
+│   │   ├── MdAnalyzerApplication.java      # Spring Boot entry point
+│   │   ├── controller/
+│   │   │   ├── DataController.java         # Data retrieval
+│   │   │   └── MaintenanceController.java  
+│   │   └── service/
+│   │       ├── DataService.java            
+│   │       ├── MaintenanceService.java  
+│   │       └── QuestDBService.java         
+│   └── resources/
+│       ├── application.yaml                
+│       └── script/                        
+│           ├── analysis_market.sql         
+│           ├── historical_d.sql            
+│           ├── historical_raw_d.sql        
+│           ├── indicator_d_52w.sql        
+│           ├── indicator_d_MA.sql          
+│           ├── indices_d.sql               
+│           └── indices_raw_d.sql         
+└── test/
+    └── java/dev/audreyl07/MDAnalyzer/
+        ├── MdAnalyzerApplicationTests.java # Context load test
+        └── controller/
+            └── DataControllerTest.java     
+            └── MaintenanceControllerTest.java 
+        └── controller/
+            └── DataServiceTest.java   
+            └── MaintenanceServiceTest.java     
+            └── QuestDBServiceTest.java         
+
+```
+
+### Controllers
+
+- **DataController** — Exposes GET endpoints for retrieving time-series data (stocks, indices, market analysis)
+- **MaintenanceController** — Exposes POST endpoints for data pipeline operations (import, transform, aggregate)
+
+### Services
+
+- **DataService** — Query QuestDB and shape results for API responses
+- **MaintenanceService** — Orchestrate multi-step SQL workflows (incremental updates, full pipelines)
+- **QuestDBService** — HTTP client for QuestDB `/exec` and `/imp` endpoints 
 
 ## How to Test
 

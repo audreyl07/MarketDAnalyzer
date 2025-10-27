@@ -1,11 +1,12 @@
 package dev.audreyl07.MDAnalyzer.service;
 
-import io.micrometer.common.util.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.micrometer.common.util.StringUtils;
 
 /**
  * Service orchestrating maintenance and batch operations against QuestDB.
@@ -97,7 +98,9 @@ public class MaintenanceService {
             return getFalseMap();
         }
         query += " date > '" + latest + "' ORDER BY date, time ASC;";
-        return questDBService.executeQuery(query);
+        // System.out.println("Query:\n" + query);
+        // return getFalseMap();
+       return questDBService.executeQuery(query);
     }
 
     public Map<String, Object> insertIntoIndicator52w(String type) {
