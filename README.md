@@ -1,11 +1,15 @@
 # MarketDAnalyzer
 
-A Spring Boot application that analyzes market data and integrates with QuestDB for time-series storage and querying. This project provides REST APIs for data ingestion, analysis, and maintenance of market datasets with SQL-based workflows.
+A Spring Boot application that analyzes market data and integrates with QuestDB for time-series storage and querying. This project provides two functionalities: 
+1. Stock historical and analytic data retrival 
+2. Maintenance pipeline for data ingestion, transformation and persistance into QuestDB 
 
-## Overall Architecture 
-![DataController API](assets/DataController.jpg)
+## Data Retrival Architecture 
+![Data Retrival Architecture](assets/DataController.jpg)
 
+## Data Maintenance Architecture 
 ![MaintenanceController API](assets/MaintenanceController.jpg)
+
 ## Installation 
 
 **Requirements:**
